@@ -20,28 +20,28 @@ Window {
             model: ListModel {
                 id: locationModelId
 
-                ListElement {text: "宜蘭縣"; location: "F-D0047-001"}
+                ListElement {text: "宜蘭縣"; location: "F-D0047-001"} //0
                 ListElement {text: "桃園市"; location: "F-D0047-005"}
-                ListElement {text: "新竹縣"; location: "F-D0047-009"}
+                ListElement {text: "新竹縣"; location: "F-D0047-009"} //2
                 ListElement {text: "苗栗縣"; location: "F-D0047-013"}
-                ListElement {text: "彰化縣"; location: "F-D0047-017"}
+                ListElement {text: "彰化縣"; location: "F-D0047-017"} //4
                 ListElement {text: "南投縣"; location: "F-D0047-021"}
-                ListElement {text: "雲林縣"; location: "F-D0047-025"}
+                ListElement {text: "雲林縣"; location: "F-D0047-025"} //6
                 ListElement {text: "嘉義縣"; location: "F-D0047-029"}
-                ListElement {text: "苗栗縣"; location: "F-D0047-033"}
-                ListElement {text: "屏東縣"; location: "F-D0047-037"}
-                ListElement {text: "臺東縣"; location: "F-D0047-041"}
-                ListElement {text: "花蓮縣"; location: "F-D0047-045"}
-                ListElement {text: "澎湖縣"; location: "F-D0047-049"}
-                ListElement {text: "基隆市"; location: "F-D0047-053"}
-                ListElement {text: "嘉義市"; location: "F-D0047-057"}
+                ListElement {text: "屏東縣"; location: "F-D0047-033"} //8
+                ListElement {text: "臺東縣"; location: "F-D0047-037"}
+                ListElement {text: "花蓮縣"; location: "F-D0047-041"} //10
+                ListElement {text: "澎湖縣"; location: "F-D0047-045"}
+                ListElement {text: "基隆市"; location: "F-D0047-049"} //12
+                ListElement {text: "新竹市"; location: "F-D0047-053"}
+                ListElement {text: "嘉義市"; location: "F-D0047-057"} //14
                 ListElement {text: "臺北市"; location: "F-D0047-061"}
-                ListElement {text: "高雄市"; location: "F-D0047-065"}
+                ListElement {text: "高雄市"; location: "F-D0047-065"} //16
                 ListElement {text: "新北市"; location: "F-D0047-069"}
-                ListElement {text: "臺中市"; location: "F-D0047-073"}
+                ListElement {text: "臺中市"; location: "F-D0047-073"} //18
                 ListElement {text: "臺南市"; location: "F-D0047-077"}
-                ListElement {text: "連江縣"; location: "F-D0047-081"}
-                ListElement {text: "連江縣"; location: "F-D0047-085"}
+                ListElement {text: "連江縣"; location: "F-D0047-081"} //20
+                ListElement {text: "金門縣"; location: "F-D0047-085"}
 
             }
             onActivated: {
