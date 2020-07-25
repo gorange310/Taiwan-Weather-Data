@@ -9,7 +9,7 @@ ApplicationWindow {
     id: rootId
     visible: true
     width: 640
-    height: 480
+    height: 780
     title: qsTr("Hello World")
     color: "lightgrey"
 
@@ -17,11 +17,9 @@ ApplicationWindow {
     property var jsonData
 
     property string datasetDescription
-    property string locationName
-    property var description:[]
 
     ColumnLayout {
-        anchors.fill: parent; spacing: 10
+        anchors.fill: parent; spacing: 0
         Label{
             text: "Taiwan Weather"
             font.pixelSize: 30
@@ -150,28 +148,29 @@ ApplicationWindow {
                 text: "Fetch Weather"
                 Layout.fillWidth: true
                 onClicked: {
-                    JS.fetchData(openDataUrl, function(fetchData){
+                    if (myListModelId != null)
+                    {
+                        myListModelId.clear()
+                    }
 
+                    JS.fetchData(openDataUrl, function(fetchData){
                         if(fetchData){
                             var object = JSON.parse(fetchData)
                             var weatherElement = object.records.locations[0].location[districtComboBoxId.currentIndex].weatherElement
 
                             datasetDescription = object.records.locations[0].datasetDescription
 
-                            for( var i in weatherElement)
+                            for(var j in weatherElement[0].time)
                             {
-                                myListModelId.append({"description": weatherElement[i].description})
+                                myListModelId.append({"startTime": weatherElement[0].time[j].startTime})
 
-                                for(var j in weatherElement[i].time)
+                                for( var i in weatherElement)
                                 {
-                                    myListModelId.append({"startTime": weatherElement[i].time[j].startTime})
+                                    myListModelId.append({"description": weatherElement[i].description})
 
                                     for(var k in weatherElement[i].time[j].elementValue )
                                     {
-                                        myListModelId.append({"value": weatherElement[i].time[j].elementValue[k].value})
-                                        myListModelId.append({"measures": weatherElement[i].time[j].elementValue[k].measures})
-
-                                        console.log(weatherElement[i].time[j].elementValue[k].value + weatherElement[i].time[j].elementValue[k].measures)
+                                        myListModelId.append({"value": weatherElement[i].time[j].elementValue[k].value+ " "+weatherElement[i].time[j].elementValue[k].measures})
                                     }
                                 }
                             }
@@ -180,69 +179,75 @@ ApplicationWindow {
                 }
             }
         }
-        RowLayout{
-            Label {
-                anchors.centerIn: parent
-                text : datasetDescription
-                font.pointSize: 20
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Label {
-                anchors.centerIn: parent
-                text : location
-                font.pointSize: 13
-                horizontalAlignment: Text.AlignHCenter
+        Label {
+            text : datasetDescription
+            font.pointSize: 20
+            height: Text.implicitHeight
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            padding: 10
+            background: Rectangle{ anchors.fill: parent; color: "orange"
             }
         }
+        ColumnLayout{
 
-        ListModel { id: myListModelId }
+            ListModel { id: myListModelId }
 
-        ListView {
-            id: myListViewId
-            model: myListModelId
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            delegate: Component {
-                Rectangle {
-                    id : rectangleId
-                    width : rootId.width
-                    height: textId.implicitHeight+10
-                    color: "grey"
-                    border.color: "white"
-                    radius: 5
-
-
-                    Text {
-                        anchors.centerIn: parent
-                        text : startTime
-                        font.pointSize: 18
-                        horizontalAlignment: Text.AlignHCenter
+            ListView {
+                id: myListViewId
+                model: myListModelId
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                section {
+                    property: "startTime"
+                    criteria: ViewSection.FullString
+                    delegate: Rectangle {
+                        id: sectionRectId
+                        width: parent.width
+                        height: sectionTextId.implicitHeight+5
+                        border.color: "yellowgreen"
+                        radius: 14
+                        Text {
+                            id: sectionTextId
+                            anchors.centerIn: parent
+                            font.pixelSize: 40
+                            text: section
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                console.log("Clicked: " + section)
+                            }
+                        }
                     }
-                    Text {
-                        id : textId
-                        anchors.centerIn: parent
-                        text : description
-                        font.pointSize: 20
-                        horizontalAlignment: Text.AlignHCenter
+                }
+
+                delegate: Component {
+                    Rectangle {
+                        id : rectangleId
+                        width : rootId.width
+                        height: textId.implicitHeight+5
+                        color: "silver"
+                        border.color: "white"
+                        radius: 5
+                        Text {
+                            id : textId
+                            anchors.centerIn: parent
+                            text : description
+                            font {pixelSize: 20; bold: true}
+                            color: "green"
+                            horizontalAlignment: Text.AlignHCenter
+                            Text {
+                                anchors.centerIn: parent
+                                text : value
+                                font {pixelSize: 13}
+
+                            }
+                        }
                     }
-                    Text {
-                        anchors.centerIn: parent
-                        text : model.value[index] + model.mesures[index]
-                        font.pointSize: 18
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-//                    Text {
-//                        anchors.centerIn: parent
-//                        text : measures
-//                        font.pointSize: 13
-//                        wrapMode: Text.WordWrap
-//                        verticalAlignment: Text.AlignVCenter
-//                        horizontalAlignment: Text.AlignHCenter
-//                    }
                 }
             }
+
         }
 
     }
