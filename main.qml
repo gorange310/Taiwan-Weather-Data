@@ -5,19 +5,30 @@ import QtQuick.Layouts 1.3
 import "fetchData.js" as JS
 
 
-Window {
+ApplicationWindow {
     id: rootId
     visible: true
     width: 640
     height: 480
     title: qsTr("Hello World")
+    color: "lightgrey"
 
     property url openDataUrl
     property var jsonData
 
+    property string datasetDescription
+    property string locationName
+    property var description:[]
+
     ColumnLayout {
         anchors.fill: parent; spacing: 10
-        Label{ text: "Taiwan weather"; font.pixelSize: 30;Layout.fillWidth: true}
+        Label{
+            text: "Taiwan Weather"
+            font.pixelSize: 30
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            padding: 10
+            background: Rectangle{ anchors.fill: parent; color: "dodgerblue"}}
         RowLayout {
             ComboBox {
                 id: comboBoxId
@@ -120,7 +131,7 @@ Window {
                     if(currentIndex === 21)
                     { districtComboBoxId.model = ["烏坵鄉","烈嶼鄉","金寧鄉","金湖鎮","金沙鎮","金城鎮"]}
 
-                    console.log("[" + (currentIndex+1) + "] " + currentValue + " is found.")
+                    console.log("[" + currentIndex + "] " + currentValue + " is found.")
                     openDataUrl = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/" + currentValue + "?Authorization=CWB-3EA618C0-B4A9-4F99-9D8E-DBE4EF20F04D&format=JSON&sort=time"
                 }
             }
@@ -129,7 +140,7 @@ Window {
                 model: ""
                 Layout.fillWidth: true
                 onActivated: {
-                    console.log("[" + (currentIndex+1) + "] " + currentText + " is activated")
+                    console.log("[" + currentIndex + "] " + currentText + " is activated")
 
                 }
             }
@@ -140,43 +151,99 @@ Window {
                 Layout.fillWidth: true
                 onClicked: {
                     JS.fetchData(openDataUrl, function(fetchData){
-                        if(fetchData){
-                            jsonData = JSON.parse(fetchData)
-                            console.log(jsonData.datasetDescription)
-//                            for (var i in object)
-//                            {listModelJsonId.append
-//                             ({
-//                                  "datasetDescription" : object.records.locations[0].datasetDescription,
-//                                  "location" : object.records.locations[0].location[districtComboBoxId.currentIndex],
-//                                  "weatherElement" :  object.records.locations[0].location[districtComboBoxId.currentIndex].weatherElement[i],
-//                              });
-//                            }
-//                            console.log(listModelJsonId)
 
-                        }else{
-                            console.log("Somthing wrong")
+                        if(fetchData){
+                            var object = JSON.parse(fetchData)
+                            var weatherElement = object.records.locations[0].location[districtComboBoxId.currentIndex].weatherElement
+
+                            datasetDescription = object.records.locations[0].datasetDescription
+
+                            for( var i in weatherElement)
+                            {
+                                myListModelId.append({"description": weatherElement[i].description})
+
+                                for(var j in weatherElement[i].time)
+                                {
+                                    myListModelId.append({"startTime": weatherElement[i].time[j].startTime})
+
+                                    for(var k in weatherElement[i].time[j].elementValue )
+                                    {
+                                        myListModelId.append({"value": weatherElement[i].time[j].elementValue[k].value})
+                                        myListModelId.append({"measures": weatherElement[i].time[j].elementValue[k].measures})
+
+                                        console.log(weatherElement[i].time[j].elementValue[k].value + weatherElement[i].time[j].elementValue[k].measures)
+                                    }
+                                }
+                            }
                         }
                     })
                 }
             }
-
-
-
         }
-        ColumnLayout {
-            ListModel { id: listModelJsonId }
-            ListView {
-                model: jsonData
-                delegate:
-                    Component {
-//                    Text {
-//                        text: datasetDescription
-//                    }
+        RowLayout{
+            Label {
+                anchors.centerIn: parent
+                text : datasetDescription
+                font.pointSize: 20
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+            }
+            Label {
+                anchors.centerIn: parent
+                text : location
+                font.pointSize: 13
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+
+        ListModel { id: myListModelId }
+
+        ListView {
+            id: myListViewId
+            model: myListModelId
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            delegate: Component {
+                Rectangle {
+                    id : rectangleId
+                    width : rootId.width
+                    height: textId.implicitHeight+10
+                    color: "grey"
+                    border.color: "white"
+                    radius: 5
+
+
                     Text {
-                        text: jsonData[index].location
+                        anchors.centerIn: parent
+                        text : startTime
+                        font.pointSize: 18
+                        horizontalAlignment: Text.AlignHCenter
                     }
+                    Text {
+                        id : textId
+                        anchors.centerIn: parent
+                        text : description
+                        font.pointSize: 20
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                    Text {
+                        anchors.centerIn: parent
+                        text : model.value[index] + model.mesures[index]
+                        font.pointSize: 18
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+//                    Text {
+//                        anchors.centerIn: parent
+//                        text : measures
+//                        font.pointSize: 13
+//                        wrapMode: Text.WordWrap
+//                        verticalAlignment: Text.AlignVCenter
+//                        horizontalAlignment: Text.AlignHCenter
+//                    }
                 }
             }
         }
+
     }
 }
